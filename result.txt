@@ -1,0 +1,37 @@
+select * from Employee where name like '%n%' and salary > 6000;
++----+------------+------+----------+-----------+--------+
+| id | name       | age  | gender   | companyId | salary |
++----+------------+------+----------+-----------+--------+
+|  1 | 'xiaohong' |   19 | 'female' |         1 |   7000 |
++----+------------+------+----------+-----------+--------+
+
+
+
+select c.companyName,t.name from Company c,(select NAME,companyId,MAX(salary) from Employee group by companyId) as t where c.id = t.companyId;
++-------------+------------+
+| companyName | name       |
++-------------+------------+
+| 'baidu'     | 'xiaoming' |
+| 'alibaba'   | 'xiaohong' |
+| 'tengxun'   | 'xiaozhi'  |
++-------------+------------+
+
+
+
+ select companyName, avgSalary from Company c, (select companyId,AVG(salary) as avgSalary from Employee group by companyId) as t where c.id = t.companyId order by avgSalary desc LIMIT 1;
++-------------+-----------+
+| companyName | avgSalary |
++-------------+-----------+
+| 'tengxun'   |      8000 |
++-------------+-----------+
+
+
+
+select e.*,avgc.companyName,avgc.avgsal from Employee e, (select id,companyName,avgsal from Company c,(select companyId,AVG(salary) as avgsal from Employee group by companyId) t where c.id = t.companyId) avgc where e.companyId = avgc.id and e.salary >= avgc.avgsal;
++----+------------+------+----------+-----------+--------+-------------+--------+
+| id | name       | age  | gender   | companyId | salary | companyName | avgsal |
++----+------------+------+----------+-----------+--------+-------------+--------+
+|  0 | 'xiaoming' |   20 | 'male'   |         0 |   6000 | 'baidu'     |   5000 |
+|  1 | 'xiaohong' |   19 | 'female' |         1 |   7000 | 'alibaba'   |   6500 |
+|  2 | 'xiaozhi'  |   15 | 'male'   |         2 |   8000 | 'tengxun'   |   8000 |
++----+------------+------+----------+-----------+--------+-------------+--------+
